@@ -10,6 +10,7 @@ services:
 
 install:
   - pip install -r requirements.txt
+  - pip install coverage
 
 before_script:
   - psql -c "CREATE USER django_user WITH PASSWORD '0000';" -U postgres
@@ -17,4 +18,7 @@ before_script:
   - cd backend
 
 script:
-  - python manage.py test --settings=config.settings.test
+  - coverage run --source='.' manage.py test --settings=config.settings.test
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
