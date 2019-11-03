@@ -21,8 +21,8 @@ class TestWhitelistMixin(TestCase):
             password=self.password,
         )
 
-    @patch('account.serializers.get_ip_address', return_value='0.0.0.0')
-    def test_it_should_create_token_session(self, *args):
+    @patch('accounts.serializers.get_ip_address', return_value='0.0.0.0')
+    def test_it_should_create_token_session(self, patched):
         self.refresh = RefreshToken.for_user(user=self.user)
         WhitelistMixin.whitelist(MagicMock(), self.refresh)
 
@@ -41,8 +41,8 @@ class TestTokenObtainPairSerializer(TestCase):
             password=self.password,
         )
 
-    @patch('account.serializers.get_ip_address', return_value='0.0.0.0')
-    def test_it_should_return_jwt_if_valid(self, *args):
+    @patch('accounts.serializers.get_ip_address', return_value='0.0.0.0')
+    def test_it_should_return_jwt_if_valid(self, patched):
         s = TokenObtainPairSerializer(
             data={
                 'username': self.username,
@@ -72,7 +72,7 @@ class TestTokenRefreshSerializer(TestCase):
             password=self.password,
         )
         self.refresh = RefreshToken.for_user(user=self.user)
-        patcher = patch('account.serializers.get_ip_address', return_value='0.0.0.0')
+        patcher = patch('accounts.serializers.get_ip_address', return_value='0.0.0.0')
         patcher.start()
         self.addCleanup(patcher.stop)
 
