@@ -1,4 +1,5 @@
 from django.utils.translation import ugettext_lazy as _
+from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import (
     TokenRefreshSerializer as TokenRefreshSerializerBase,
@@ -56,10 +57,23 @@ class TokenRefreshSerializer(WhitelistMixin, TokenRefreshSerializerBase):
 
         TokenSession.objects.filter(jti=jti).delete()
 
-        # Check if token is expired
-        refresh.check_exp()
-
         refresh.set_jti()
         refresh.set_exp()
 
         return self.whitelist(refresh)
+
+
+class TokenDestroySerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, attrs):
+        # Check if token is invalid or expired
+        refresh = RefreshToken(attrs['refresh'])
+
+        # Check if session with token exists
+        jti = refresh[api_settings.JTI_CLAIM]
+        if not TokenSession.objects.filter(jti=jti).exists():
+            raise TokenError(_('Token is not whitelisted'))
+
+        TokenSession.objects.filter(jti=jti).delete()
+        return {}
