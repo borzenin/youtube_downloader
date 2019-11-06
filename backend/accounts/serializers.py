@@ -37,6 +37,12 @@ class TokenObtainPairSerializer(WhitelistMixin, TokenObtainPairSerializerBase):
         refresh = self.get_token(self.user)
         return self.whitelist(refresh)
 
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['username'] = user.username
+        return token
+
 
 class TokenRefreshSerializer(WhitelistMixin, TokenRefreshSerializerBase):
     def validate(self, attrs):

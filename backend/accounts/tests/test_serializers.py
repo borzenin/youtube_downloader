@@ -58,8 +58,12 @@ class TestTokenObtainPairSerializer(TestCase):
         self.assertIn('refresh', returned)
 
         # Check it is correct tokens
-        AccessToken(returned['access'])
-        RefreshToken(returned['refresh'])
+        access = AccessToken(returned['access'])
+        refresh = RefreshToken(returned['refresh'])
+
+        # Check username in claims
+        self.assertEqual(access['username'], self.username)
+        self.assertEqual(refresh['username'], self.username)
 
 
 class TestTokenRefreshSerializer(TestCase):
