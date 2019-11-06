@@ -46,8 +46,8 @@ class TokenObtainPairSerializer(WhitelistMixin, TokenObtainPairSerializerBase):
 
 class TokenRefreshSerializer(WhitelistMixin, TokenRefreshSerializerBase):
     def validate(self, attrs):
-        # Check if token is valid
-        refresh = RefreshToken(attrs['refresh'], verify=False)
+        # Check if token is invalid or expired
+        refresh = RefreshToken(attrs['refresh'])
 
         # Check if session with token exists
         jti = refresh[api_settings.JTI_CLAIM]
