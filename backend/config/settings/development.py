@@ -9,6 +9,11 @@ ALLOWED_HOSTS = ['*']
 # CORS
 INSTALLED_APPS.append('corsheaders')
 
+MIDDLEWARE.insert(
+    MIDDLEWARE.index('django.middleware.common.CommonMiddleware'),
+    'corsheaders.middleware.CorsMiddleware'
+)
+
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "https://localhost:3000",
@@ -16,6 +21,7 @@ CORS_ORIGIN_WHITELIST = [
 
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
     'filters': {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
