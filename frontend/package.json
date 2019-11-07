@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "connected-react-router": "^6.5.2",
+    "jsonwebtoken": "^8.5.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-redux": "^7.1.1",
@@ -18,7 +19,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "collect": "npm run build && npm run mkdirs && npm run copy-files && npm run replace-all && npm run load-static",
+    "mkdirs": "mkdir -p ../backend/staticfiles/js && mkdir -p ../backend/templates",
+    "copy-files": "rm -f ../backend/staticfiles/js/*.js && cp build/static/js/*.js ../backend/staticfiles/js && cp build/index.html ../backend/templates/base.html",
+    "replace-all": "npm run perform-replace ../backend/templates/base.html $(ls ../backend/staticfiles/js/*.js | xargs -n 1 basename | tr '\\n' ' ')",
+    "perform-replace": "python -c \"import sys;from functools import reduce;p=sys.argv[1];data=reduce(lambda x,y: x.replace('/static/js/'+y,'{% static \\'js/'+y+'\\' %}'),sys.argv[2:],open(p).read());open(p,'w').write(data)\"",
+    "load-static": "python -c \"d='{% load static %}';f='../backend/templates/base.html';r=open(f).read();open(f, 'w').write(d+r) if r.find(d) == -1 else None\"",
+    "collectstatic": "cd ../backend && python manage.py collectstatic --no-input"
   },
   "eslintConfig": {
     "extends": "react-app"
