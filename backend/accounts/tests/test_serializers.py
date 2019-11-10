@@ -108,8 +108,8 @@ class TestTokenRefreshSerializer(TestCase):
             context=MagicMock()
         )
         with self.assertRaisesMessage(
-            TokenError,
-            'Token is invalid or expired',
+                TokenError,
+                'Token is invalid or expired',
         ):
             s.is_valid()
 
@@ -121,8 +121,8 @@ class TestTokenRefreshSerializer(TestCase):
             context=MagicMock()
         )
         with self.assertRaisesMessage(
-            TokenError,
-            'Token is not whitelisted',
+                TokenError,
+                'Token is not whitelisted',
         ):
             s.is_valid()
 
@@ -136,7 +136,7 @@ class TestTokenRefreshSerializer(TestCase):
             context=MagicMock()
         )
         with self.assertRaisesMessage(
-            TokenError,
-            'expired',
+                TokenError,
+                'expired',
         ):
             s.is_valid()
