@@ -1,12 +1,15 @@
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password
 from django.test import TestCase
+from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from ..models import TokenSession
-from ..serializers import WhitelistMixin, TokenObtainPairSerializer, TokenRefreshSerializer
+from ..serializers import (WhitelistMixin, TokenObtainPairSerializer,
+                           TokenRefreshSerializer, UserSerializer)
 
 User = get_user_model()
 
@@ -140,3 +143,72 @@ class TestTokenRefreshSerializer(TestCase):
                 'expired',
         ):
             s.is_valid()
+
+
+class TestUserSerializer(TestCase):
+    def setUp(self):
+        self.username = 'user'
+        self.password = 'password'
+        self.new_username = 'user1234'
+        self.new_password = 'passwordABC123'
+
+        self.user = User.objects.create_user(
+            username=self.username,
+            password=self.password,
+        )
+
+    def test_username_read_only_password_write_only(self):
+        s = UserSerializer(data={'username': self.new_username, 'password': self.new_password})
+        self.assertTrue(s.fields['username'].read_only)
+        self.assertTrue(s.fields['password'].write_only)
+
+    def test_context_registration_makes_username_writable(self):
+        s = UserSerializer(
+            data={'username': self.new_username, 'password': self.new_password},
+            context={'registration': True}
+        )
+        self.assertFalse(s.fields['username'].read_only)
+
+    def test_weak_password_should_fail(self):
+        s = UserSerializer(
+            data={'username': self.new_username, 'password': '0000'},
+            context={'registration': True}
+        )
+        with self.assertRaisesMessage(ValidationError, 'password') as error:
+            s.is_valid(raise_exception=True)
+
+        msg = '\n'.join(error.exception.detail['password'])
+        self.assertIn('too short', msg)
+        self.assertIn('too common', msg)
+        self.assertIn('entirely numeric', msg)
+
+    def test_success_create(self):
+        s = UserSerializer(
+            data={'username': self.new_username, 'password': self.new_password},
+            context={'registration': True}
+        )
+        s.is_valid(raise_exception=True)
+        instance = s.save()
+        self.assertEqual(instance.username, self.new_username)
+        self.assertTrue(check_password(self.new_password, instance.password))
+
+    def test_success_update(self):
+        s = UserSerializer(self.user, data={'password': self.new_password})
+        s.is_valid(raise_exception=True)
+        instance = s.save()
+        self.assertEqual(instance.username, self.username)
+        self.assertTrue(check_password(self.new_password, instance.password))
+
+    def test_success_partial_update(self):
+        s = UserSerializer(self.user, data={'password': self.new_password}, partial=True)
+        s.is_valid(raise_exception=True)
+        instance = s.save()
+        self.assertEqual(instance.username, self.username)
+        self.assertTrue(check_password(self.new_password, instance.password))
+
+    def test_success_partial_update_with_no_data(self):
+        s = UserSerializer(self.user, data={}, partial=True)
+        s.is_valid(raise_exception=True)
+        instance = s.save()
+        self.assertEqual(instance.username, self.username)
+        self.assertTrue(check_password(self.password, instance.password))
