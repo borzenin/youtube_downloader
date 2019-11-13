@@ -1,15 +1,10 @@
 import axios from "axios"
-import {TOKEN_DESTROY_URL, TOKEN_OBTAIN_URL} from "../config"
+import {REGISTER_URL, TOKEN_DESTROY_URL, TOKEN_OBTAIN_URL} from "../config"
 import {defaultConfig, isTokenExpired} from "./common"
 import jwt from "jsonwebtoken"
-
+import {setErrors} from "./errors"
 
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS"
-export const LOGIN_FAIL = "LOGIN_FAIL"
-
-export const REGISTER_SUCCESS = "REGISTER_SUCCESS"
-export const REGISTER_FAIL = "REGISTER_FAIL"
-
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS"
 
 export const SYNC_TIME = "SYNC_TIME"
@@ -72,7 +67,22 @@ export const login = (username, password) => dispatch => {
             })
         })
         .catch(error => {
-            console.log(error)
+            const {data} = error.response
+            const loginErrors = data.detail ? {wrongCredentials: [data.detail]} : data
+            dispatch(setErrors("login", loginErrors))
+        })
+}
+
+export const register = (username, password) => dispatch => {
+    const body = JSON.stringify({username, password})
+
+    return axios
+        .post(REGISTER_URL, body, defaultConfig())
+        .then(res => {
+            dispatch(login(username, password))
+        })
+        .catch(error => {
+            dispatch(setErrors("register", error.response.data))
         })
 }
 
@@ -87,7 +97,5 @@ export const logout = () => dispatch => {
                 type: LOGOUT_SUCCESS
             })
         })
-        .catch(error => {
-            console.log(error)
-        })
+        .catch(error => console.log(error))
 }
