@@ -12,7 +12,7 @@ import {
 const initialState = {
     isAuthenticated: false,
     isLoading: false,
-    username: null
+    username: null,
 }
 
 export default function (state = initialState, action) {
