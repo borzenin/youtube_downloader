@@ -67,6 +67,10 @@ export const login = (username, password) => dispatch => {
             })
         })
         .catch(error => {
+            if (!error.response) {
+                console.log(error)
+                return
+            }
             const {data} = error.response
             const loginErrors = data.detail ? {wrongCredentials: [data.detail]} : data
             dispatch(setErrors("login", loginErrors))
@@ -82,6 +86,10 @@ export const register = (username, password) => dispatch => {
             dispatch(login(username, password))
         })
         .catch(error => {
+            if (!error.response) {
+                console.log(error)
+                return
+            }
             dispatch(setErrors("register", error.response.data))
         })
 }
