@@ -4,3 +4,6 @@ django-environ==0.4.5
 djangorestframework==3.10.3
 djangorestframework-simplejwt==4.3.0
 psycopg2==2.8.4
+celery==4.3.0
+redis==3.3.11
+youtube-dl==2019.11.5
