@@ -32,6 +32,5 @@ export const tokenConfig = token => {
 
 export const isTokenExpired = token => {
     const payload = jwt.decode(token, {json: true})
-    console.log(payload, getCurrentTime())
     return payload.exp < getCurrentTime()
 }

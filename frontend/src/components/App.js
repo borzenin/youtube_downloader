@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from "react"
+import React, {Component} from "react"
 import {BrowserRouter} from "react-router-dom"
 
 import Body from "./layout/Body"
@@ -16,10 +16,10 @@ class App extends Component {
             <Provider store={store}>
                 <Startup>
                     <BrowserRouter>
-                        <Fragment>
+                        <div className="min-vh-100 bg-light">
                             <HeaderContainer/>
                             <Body/>
-                        </Fragment>
+                        </div>
                     </BrowserRouter>
                 </Startup>
             </Provider>

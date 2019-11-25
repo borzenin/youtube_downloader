@@ -40,7 +40,7 @@ class Header extends Component {
         )
 
         return (
-            <nav className="navbar navbar-expand navbar-light" style={{backgroundColor: "rgb(114,192,204)"}}>
+            <nav className="navbar navbar-expand navbar-light bg-info mb-0">
                 <div className="container">
                     <div className="collapse navbar-collapse" id="navbarText">
                         <ul className="navbar-nav mr-auto">
@@ -66,7 +66,7 @@ class Header extends Component {
                         </ul>
 
                         <ul className="navbar-nav ml-auto">
-                            <span className="nav-item my-auto mr-2">{this.props.username}</span>
+                            <span className="nav-item my-auto mr-3 text-uppercase">{this.props.username}</span>
                             {this.props.isAuthenticated ? logoutButton : loginRegisterButtons}
                         </ul>
 
