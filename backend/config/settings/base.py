@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+import logging
 import os
 from datetime import timedelta
 
 import environ
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = environ.Path(__file__) - 3
@@ -22,7 +22,6 @@ CONFIG_DIR = environ.Path(__file__) - 2
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(CONFIG_DIR, '.env'))
-
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str(
@@ -45,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'accounts.apps.AccountsConfig',
+    'loader.apps.LoaderConfig',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +86,14 @@ DATABASES = {
     'default': env.db('DATABASE_URL', default='sqlite:///db.sqlite3'),
 }
 
+# Celery
+
+CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env.str('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -117,7 +125,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
@@ -147,3 +154,6 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
 }
+
+# Loader
+YOUTUBE_DL_LOGGING_LEVEL = logging.ERROR

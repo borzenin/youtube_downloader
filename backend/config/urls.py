@@ -22,8 +22,14 @@ def base_view(request):
     return render(request, 'base.html')
 
 
+api_patterns = [
+    path('accounts/', include('accounts.urls')),
+    path('loader/', include('loader.urls')),
+]
+
+
 urlpatterns = [
-    path('api/v1/accounts/', include('accounts.urls')),
+    path('api/v1/', include(api_patterns)),
 
     path('', base_view),
     path('login/', base_view),
