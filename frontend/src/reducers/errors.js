@@ -3,6 +3,7 @@ import {SET_ERRORS} from "../actions/errors"
 const initialState = {
     register: null,
     login: null,
+    videoInfo: null,
 }
 
 export default function (state = initialState, action) {

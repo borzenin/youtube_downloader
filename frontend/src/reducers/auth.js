@@ -5,7 +5,7 @@ import {
     LOGOUT_SUCCESS,
     SYNC_TIME,
     SYNC_TIME_SUCCESS,
-    SYNC_TIME_UNNECESSARY,
+    SYNC_TIME_UNNECESSARY
 } from "../actions/auth"
 
 

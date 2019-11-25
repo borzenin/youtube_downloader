@@ -3,6 +3,7 @@
     width: 64px;
     height: 64px;
 }
+
 .spinner:after {
     content: " ";
     display: block;
@@ -14,6 +15,7 @@
     border-color: dodgerblue transparent dodgerblue transparent;
     animation: spinner 1.2s linear infinite;
 }
+
 @keyframes spinner {
     0% {
         transform: rotate(0deg);
