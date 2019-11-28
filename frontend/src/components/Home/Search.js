@@ -3,45 +3,47 @@ import {pure} from "recompose"
 import classnames from "classnames"
 
 class Search extends Component {
+    constructor(props) {
+        super(props)
+        this.checkingVideoInfoStarted = false
+        this.cancelCheckingVideoInfo = null
+    }
+
     state = {
         q: "",
-        timer: null,
         errorMessage: null,
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        switch (this.props.taskStatus) {
-            case null:
-                break
-            case "SUCCESS":
-                if (this.state.timer !== null) {
-                    // TASK FINISHED
-                    const {error, error_message} = this.props.taskResult
-                    clearInterval(this.state.timer)
-                    this.setState({
-                        timer: null,
-                        errorMessage: error ? error_message : null
-                    })
-                }
-                break
-            case "FAILURE":
-            case "REVOKED":
-                if (this.state.timer !== null) {
-                    clearInterval(this.state.timer)
-                    this.setState({timer: null})
-                }
-                break
-            default:
-                if (this.state.timer === null && this.props.taskId !== null) {
-                    const timer = setInterval(this.checkVideoInfo, 1000)
-                    this.setState({timer})
-                }
-                break
+        if (this.props.isChecking && !this.checkingVideoInfoStarted) {
+            this.startCheckingVideoInfo()
+        } else if (!this.props.isChecking && this.checkingVideoInfoStarted) {
+            this.stopCheckingVideoInfo()
+
+            if (
+                this.props.taskStatus === "SUCCESS" &&
+                this.props.taskResult !== null &&
+                this.props.taskResult.error
+            ) {
+                this.setState({
+                    errorMessage: this.props.taskResult.error_message
+                })
+            }
         }
     }
 
-    checkVideoInfo = () => {
-        this.props.checkVideoInfo(this.props.taskId)
+    startCheckingVideoInfo = () => {
+        this.checkingVideoInfoStarted = true
+        const {cancelCheckingVideoInfo} = this.props.startCheckingVideoInfo(this.props.taskId)
+        this.cancelCheckingVideoInfo = cancelCheckingVideoInfo
+    }
+
+    stopCheckingVideoInfo = () => {
+        this.checkingVideoInfoStarted = false
+        if (this.cancelCheckingVideoInfo !== null) {
+            this.cancelCheckingVideoInfo()
+            this.cancelCheckingVideoInfo = null
+        }
     }
 
     onSubmit = e => {
