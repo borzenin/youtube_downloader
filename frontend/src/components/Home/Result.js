@@ -25,20 +25,24 @@ class Result extends Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {["high", "medium", "low"].map((val, index) => (
-                        <tr key={index}>
-                            <td><span role="img" aria-label="Audio">&#x1f3b5;</span></td>
-                            <td>mp3</td>
-                            <td>{val}</td>
-                            <td/>
-                            <td>
-                                <form onSubmit={this.onSubmit}>
-                                    <input type="hidden" name="format_id" value={"audio:" + val}/>
-                                    <button type="submit" className="btn btn-success btn-sm">Download</button>
-                                </form>
-                            </td>
-                        </tr>
-                    ))}
+                    <tr>
+                        <td><span role="img" aria-label="Audio">&#x1f3b5;</span></td>
+                        <td>mp3</td>
+                        <td>
+                            <select defaultValue="audio:default" form="audio_format_form"
+                                    name="format_id" className="form-control form-control-sm">
+                                <option value="audio:low">Low</option>
+                                <option value="audio:default">Default</option>
+                                <option value="audio:best">Best</option>
+                            </select>
+                        </td>
+                        <td/>
+                        <td>
+                            <form id="audio_format_form" onSubmit={this.onSubmit}>
+                                <button type="submit" className="btn btn-success btn-sm">Download</button>
+                            </form>
+                        </td>
+                    </tr>
                     {taskResult.formats.map((format, index) => (
                         <tr key={index}>
                             <td><span role="img" aria-label="Video">&#x1F3AC;</span></td>
