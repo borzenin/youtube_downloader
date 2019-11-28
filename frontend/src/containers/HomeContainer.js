@@ -1,5 +1,5 @@
 import {connect} from "react-redux"
-import {checkVideoInfo, getVideoInfo} from "../actions/loader"
+import {startCheckingVideoInfo, getVideoInfo} from "../actions/loader"
 import Home from "../components/Home"
 
 
@@ -9,5 +9,5 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    {getVideoInfo, checkVideoInfo}
+    {getVideoInfo, startCheckingVideoInfo}
 )(Home)

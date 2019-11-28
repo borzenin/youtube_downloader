@@ -1,14 +1,9 @@
-import {
-    CREATE_TASK,
-    TASK_CHECK_FAILURE,
-    TASK_CHECK_SUCCESS,
-    TASK_CREATION_FAILURE,
-    TASK_CREATION_SUCCESS
-} from "../actions/loader"
+import {CREATE_TASK, TASK_CREATION_FAILURE, TASK_CREATION_SUCCESS, TASK_FINISHED} from "../actions/loader"
 
 
 const initialState = {
     isLoading: false,
+    isChecking: false,
     taskId: null,
     taskStatus: null,
     taskResult: null,
@@ -19,31 +14,35 @@ export default function (state = initialState, action) {
         case CREATE_TASK:
             return {
                 ...state,
-                isLoading: true
+                isLoading: true,
+                isChecking: false
             }
         case TASK_CREATION_SUCCESS:
             return {
                 ...state,
+                isLoading: true,
+                isChecking: true,
                 taskId: action.payload.task_id,
                 taskStatus: action.payload.task_status,
                 taskResult: null
             }
-        case TASK_CHECK_SUCCESS:
+        case TASK_FINISHED:
             return {
                 ...state,
                 isLoading: false,
+                isChecking: false,
                 taskId: action.payload.taskId,
                 taskStatus: action.payload.taskStatus,
-                taskResult: action.payload.taskResult,
+                taskResult: action.payload.taskResult
             }
         case TASK_CREATION_FAILURE:
-        case TASK_CHECK_FAILURE:
             return {
                 ...state,
                 isLoading: false,
+                isChecking: false,
                 taskId: null,
                 taskStatus: null,
-                videoInfo: null,
+                taskResult: null,
             }
         default:
             return state

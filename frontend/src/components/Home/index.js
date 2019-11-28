@@ -4,9 +4,9 @@ import Preview from "./Preview"
 import Result from "./Result"
 
 
-const Home = ({getVideoInfo, checkVideoInfo, isLoading, taskId, taskStatus, taskResult}) => (
+const Home = ({getVideoInfo, startCheckingVideoInfo, isLoading, isChecking, taskId, taskStatus, taskResult}) => (
     <div className="col-md-6 mx-auto">
-        <Search {...{getVideoInfo, checkVideoInfo, taskId, taskStatus, taskResult}} />
+        <Search {...{getVideoInfo, startCheckingVideoInfo, taskId, taskStatus, taskResult, isChecking}} />
         <Preview {...{isLoading, taskResult}} />
         <Result {...{taskResult}} />
     </div>

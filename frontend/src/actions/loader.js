@@ -7,8 +7,7 @@ export const CREATE_TASK = "CREATE_TASK_VIDEO_INFO"
 export const TASK_CREATION_SUCCESS = "TASK_CREATION_SUCCESS_VIDEO_INFO"
 export const TASK_CREATION_FAILURE = "TASK_CREATION_FAILURE_VIDEO_INFO"
 
-export const TASK_CHECK_SUCCESS = "TASK_CHECK_SUCCESS_VIDEO_INFO"
-export const TASK_CHECK_FAILURE = "TASK_CHECK_FAILURE_VIDEO_INFO"
+export const TASK_FINISHED = "TASK_FINISHED_VIDEO_INFO"
 
 
 export const getVideoInfo = (url) => dispatch => {
@@ -30,21 +29,50 @@ export const getVideoInfo = (url) => dispatch => {
         })
 }
 
-export const checkVideoInfo = (taskId) => dispatch => {
-    return axiosWithAuth("get", urljoin(VIDEO_INFO_URL, taskId), defaultConfig())
-        .then(res => {
-            const {task_id, task_status, task_result} = res.data
-            dispatch({
-                type: TASK_CHECK_SUCCESS,
-                payload: {
-                    taskId: task_id,
-                    taskStatus: task_status,
-                    taskResult: task_result
-                }
-            })
-        })
-        .catch(error => {
-            console.log(error)
-            dispatch({type: TASK_CHECK_FAILURE})
-        })
+const checkVideoInfo = async (taskId) => {
+    try {
+        const result = await axiosWithAuth("get", urljoin(VIDEO_INFO_URL, taskId), defaultConfig())
+        const isTaskFinished = ["SUCCESS", "FAILURE", "REVOKED"].includes(result.data.task_status)
+        return {
+            fetchError: false,
+            isTaskFinished: isTaskFinished,
+            taskId: result.data.task_id,
+            taskStatus: result.data.task_status,
+            taskResult: result.data.task_result
+        }
+    } catch (error) {
+        return {
+            fetchError: true,
+            isTaskFinished: true,
+            taskId: taskId,
+            taskStatus: null,
+            taskResult: null
+        }
+    }
+}
+
+export const startCheckingVideoInfo = (taskId) => dispatch => {
+    let cancelled = false
+    const promise = new Promise(async () => {
+        while (true) {
+            if (cancelled) return
+            const result = await checkVideoInfo(taskId)
+            if (result.isTaskFinished) {
+                dispatch({
+                    type: TASK_FINISHED,
+                    payload: {
+                        ...result
+                    }
+                })
+                return
+            }
+            await new Promise(((resolve) => setTimeout(resolve, 800)))
+        }
+    })
+    return {
+        promise,
+        cancelCheckingVideoInfo: () => {
+            cancelled = true
+        }
+    }
 }
